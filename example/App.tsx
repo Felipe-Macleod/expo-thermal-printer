@@ -1,11 +1,31 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from "react-native";
+import * as ThermalPrinter from "thermal-printer";
 
-import * as ThermalPrinter from 'thermal-printer';
+const text = `
+  [L]
+  [C]<u><font size='big'>Macleod</font></u>
+  [L]
+  [C]================================
+  [L]
+  [L]Resolveu sem gastar usando:
+  [C]<b>Kotlin</b>
+  [L]
+  [C]--------------------------------
+`;
 
 export default function App() {
   return (
     <View style={styles.container}>
       <Text>{ThermalPrinter.hello()}</Text>
+      <View style={{ margin: 10 }}>
+        <Button
+          title="Request Permission"
+          onPress={() => ThermalPrinter.requestBluetoothPermissions()}
+        />
+      </View>
+      <View style={{ margin: 10 }}>
+        <Button title="Print" onPress={() => ThermalPrinter.print(text)} />
+      </View>
     </View>
   );
 }
@@ -13,8 +33,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

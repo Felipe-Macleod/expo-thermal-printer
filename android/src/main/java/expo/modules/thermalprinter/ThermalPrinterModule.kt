@@ -1,42 +1,70 @@
 package expo.modules.thermalprinter
 
+import android.Manifest
+import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.dantsu.escposprinter.EscPosPrinter
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothPrintersConnections
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
+
 class ThermalPrinterModule : Module() {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
+  val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  val activity: Activity
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
+
+  private val bluetoothPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    arrayOf(
+      Manifest.permission.BLUETOOTH,
+      Manifest.permission.BLUETOOTH_ADMIN,
+      Manifest.permission.BLUETOOTH_SCAN, // Necessário para escanear dispositivos Bluetooth
+      Manifest.permission.BLUETOOTH_CONNECT // Para Android 12+
+    )
+  } else {
+    TODO("VERSION.SDK_INT < S")
+  }
+
+  companion object {
+    private const val PERMISSION_REQUEST_CODE = 1001
+  }
+
   override fun definition() = ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ThermalPrinter')` in JavaScript.
     Name("ThermalPrinter")
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
     Constants(
       "PI" to Math.PI
     )
 
-    // Defines event names that the module can send to JavaScript.
     Events("onChange")
 
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
     Function("hello") {
-      "Hello world! 👋"
+      "Hello Marcos!"
     }
 
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
+    Function("requestBluetoothPermissions") {
+      appContext.permissions?.askForPermissions(expo.modules.interfaces.permissions.PermissionsResponseListener {  }, *bluetoothPermissions)
+    }
+
+    Function("print") { text: String ->
+      val printer = EscPosPrinter(BluetoothPrintersConnections.selectFirstPaired(), 203, 48f, 32)
+      printer
+        .printFormattedText(text.trimIndent())
+    }
+
     AsyncFunction("setValueAsync") { value: String ->
-      // Send an event to JavaScript.
       sendEvent("onChange", mapOf(
         "value" to value
       ))
     }
 
-    // Enables the module to be used as a native view. Definition components that are accepted as part of
-    // the view definition: Prop, Events.
     View(ThermalPrinterView::class) {
       // Defines a setter for the `name` prop.
       Prop("name") { view: ThermalPrinterView, prop: String ->
