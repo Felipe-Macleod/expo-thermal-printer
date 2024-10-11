@@ -8,6 +8,6 @@ export function print(text: string) {
   return ThermalPrinterModule.print(text);
 }
 
-export function requestBluetoothPermissions() {
+export async function requestBluetoothPermissions() {
   return ThermalPrinterModule.requestBluetoothPermissions();
 }

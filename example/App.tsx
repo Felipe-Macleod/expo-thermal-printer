@@ -1,5 +1,5 @@
 import { Button, StyleSheet, Text, View } from "react-native";
-import * as ThermalPrinter from "thermal-printer";
+import * as ThermalPrinter from "expo-thermal-printer";
 
 const text = `
   [L]
@@ -16,11 +16,12 @@ const text = `
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>{ThermalPrinter.hello()}</Text>
       <View style={{ margin: 10 }}>
         <Button
           title="Request Permission"
-          onPress={() => ThermalPrinter.requestBluetoothPermissions()}
+          onPress={() =>
+            ThermalPrinter.requestBluetoothPermissions().then(console.log)
+          }
         />
       </View>
       <View style={{ margin: 10 }}>

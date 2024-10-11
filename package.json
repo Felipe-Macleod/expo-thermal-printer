@@ -1,5 +1,5 @@
 {
-  "name": "thermal-printer",
+  "name": "expo-thermal-printer",
   "version": "0.1.0",
   "description": "My new module",
   "main": "build/index.js",
