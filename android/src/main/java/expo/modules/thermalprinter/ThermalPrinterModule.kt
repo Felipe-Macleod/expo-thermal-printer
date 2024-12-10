@@ -18,7 +18,10 @@ class ThermalPrinterModule : Module() {
       Manifest.permission.BLUETOOTH_CONNECT // Para Android 12+
     )
   } else {
-    TODO("VERSION.SDK_INT < S")
+    arrayOf(
+      Manifest.permission.BLUETOOTH,
+      Manifest.permission.BLUETOOTH_ADMIN
+    )
   }
 
   override fun definition() = ModuleDefinition {
